@@ -7,6 +7,12 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <ScrollViewer Margin="10,37,10,10">
+            <StackPanel x:Name="parent">
 
+            </StackPanel>
+        </ScrollViewer>
+        <ComboBox x:Name="Days" Selected="SelectDay" VerticalAlignment="Top" Width="200" Margin="10,10,590,0"/>
+        <Button Content="Обновить данные" HorizontalAlignment="Left" Margin="636,10,0,0" VerticalAlignment="Top" Width="154" Height="22" Click="UpdateWeather"/>
     </Grid>
 </Window>
