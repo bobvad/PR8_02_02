@@ -24,7 +24,7 @@ namespace Weather.Elements
         public Item(Hour hour)
         {
             InitializeComponent();
-            lHour.Content = hour.hour;
+            lHour.Content = hour.hour + ":00";
             lCondition.Content = hour.ToCondition();
             lHumidity.Content = hour.humidity + "%";
             lPrecType.Content = hour.ToPrecType();

@@ -11,43 +11,26 @@ namespace Weather
     {
         DataResponse response;
         private string currentCity = "Пермь";
-        private float currentLat = 58.009671f;
-        private float currentLon = 56.226184f;
 
         public MainWindow()
         {
             InitializeComponent();
-            Loaded += async (s, e) => await LoadWeatherByCoords(currentLat, currentLon);
+
+            WeatherService.CleanupOldCache();
+
+            Loaded += async (s, e) => await LoadWeather("Пермь");
 
             CityBox.GotFocus += CityBox_GotFocus;
             CityBox.LostFocus += CityBox_LostFocus;
         }
 
-        private async Task LoadWeatherByCoords(float lat, float lon)
+        private async Task LoadWeather(string city)
         {
             try
             {
-                response = await GetWeather.Get(lat, lon);
-                UpdateUI();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private async Task LoadWeatherByCity(string city)
-        {
-            try
-            {
-                var cords = await GeoCoder.GetCoords(city);
-
                 currentCity = city;
-                currentLat = cords.lat;
-                currentLon = cords.lon;
 
-                response = await GetWeather.Get(cords.lat, cords.lon);
+                response = await WeatherService.GetWeatherCached(city);
 
                 Title = $"Прогноз погоды - {currentCity}";
 
@@ -57,9 +40,34 @@ namespace Weather
             {
                 MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
+
+                if (ex.Message.Contains("Лимит запросов"))
+                {
+                    await TryLoadFromCache(city);
+                }
+
                 CityBox.Text = "Введите город...";
                 CityBox.Foreground = System.Windows.Media.Brushes.Gray;
             }
+        }
+
+        private async Task TryLoadFromCache(string city)
+        {
+           
+                using (var db = new WheatherContext())
+                {
+                    var cache = db.Cache.FirstOrDefault(x => x.City.ToLower() == city.ToLower());
+
+                    if (cache != null)
+                    {
+                        MessageBox.Show($"Лимит запросов исчерпан. Используем кэшированные данные от {cache.SavedAt:HH:mm}",
+                            "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                        response = Newtonsoft.Json.JsonConvert.DeserializeObject<DataResponse>(cache.JsonData);
+                        UpdateUI();
+                    }
+                }
+            
         }
 
         private void UpdateUI()
@@ -100,7 +108,7 @@ namespace Weather
 
         private async void UpdateWeather(object sender, RoutedEventArgs e)
         {
-            await LoadWeatherByCoords(currentLat, currentLon);
+            await LoadWeather(currentCity);
         }
 
         private void CityBox_GotFocus(object sender, RoutedEventArgs e)
@@ -128,7 +136,7 @@ namespace Weather
                 string city = CityBox.Text.Trim();
                 if (!string.IsNullOrEmpty(city) && city != "Введите город...")
                 {
-                    await LoadWeatherByCity(city);
+                    await LoadWeather(city);
                 }
             }
         }
@@ -138,7 +146,7 @@ namespace Weather
             string city = CityBox.Text.Trim();
             if (!string.IsNullOrEmpty(city) && city != "Введите город...")
             {
-                await LoadWeatherByCity(city);
+                await LoadWeather(city);
             }
         }
     }
