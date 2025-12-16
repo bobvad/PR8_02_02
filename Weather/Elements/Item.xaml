@@ -5,45 +5,101 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Weather.Elements"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="60" d:DesignWidth="800">
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" MinWidth="138"/>
-            <ColumnDefinition Width="Auto" MinWidth="168"/>
-            <ColumnDefinition Width="Auto" MinWidth="169"/>
-            <ColumnDefinition Width="Auto" MinWidth="178"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
+    <Border BorderBrush="#E0E0E0" 
+            BorderThickness="0,0,0,1"
+            Background="White"
+            Padding="10,8">
 
-        <!-- Час - фиксированная ширина -->
-        <Label x:Name="lHour" 
-               Grid.Column="0"
-               MinWidth="60"
-               HorizontalContentAlignment="Center"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="100"/>
+                <ColumnDefinition Width="*" MinWidth="140"/>
+                <ColumnDefinition Width="*" MinWidth="120"/>
+                <ColumnDefinition Width="*" MinWidth="140"/>
+                <ColumnDefinition Width="*" MinWidth="100"/>
+            </Grid.ColumnDefinitions>
 
-        <!-- Условия - фиксированная ширина -->
-        <Label x:Name="lCondition" 
-               Grid.Column="1"
-               MinWidth="120"
-               HorizontalContentAlignment="Center"/>
+            <Border Grid.Column="0"
+                    Background="#F5F5F5"
+                    CornerRadius="4"
+                    Padding="8,4"
+                    Margin="2">
+                <Label x:Name="lHour" 
+                       Content="12:00"
+                       HorizontalContentAlignment="Center"
+                       VerticalContentAlignment="Center"
+                       FontWeight="Medium"
+                       Foreground="#333333"
+                       Padding="0"/>
+            </Border>
 
-        <!-- Влажность - фиксированная ширина -->
-        <Label x:Name="lHumidity" 
-               Grid.Column="2"
-               MinWidth="80"
-               HorizontalContentAlignment="Center"/>
+           
+            <Border Grid.Column="1"
+                    Background="#E8F5E8"
+                    CornerRadius="4"
+                    Padding="8,4"
+                    Margin="2">
+                <Label x:Name="lCondition" 
+                       Content="Ясно"
+                       HorizontalContentAlignment="Center"
+                       VerticalContentAlignment="Center"
+                       Foreground="#2E7D32"
+                       Padding="0"/>
+            </Border>
 
-        <!-- Тип осадков - фиксированная ширина -->
-        <Label x:Name="lPrecType" 
-               Grid.Column="3"
-               MinWidth="100"
-               HorizontalContentAlignment="Center"/>
+            <Border Grid.Column="2"
+                    Background="#E3F2FD"
+                    CornerRadius="4"
+                    Padding="8,4"
+                    Margin="2">
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+                    <Label Content=""
+                           Padding="0,0,4,0"
+                           Foreground="#1976D2"/>
+                    <Label x:Name="lHumidity" 
+                           Content="65%"
+                           HorizontalContentAlignment="Center"
+                           VerticalContentAlignment="Center"
+                           Foreground="#1565C0"
+                           Padding="0"/>
+                </StackPanel>
+            </Border>
 
-        <!-- Температура - оставшееся пространство -->
-        <Label x:Name="lTemp" 
-               Grid.Column="4"
-               MinWidth="100"
-               HorizontalContentAlignment="Center"/>
-    </Grid>
+            <Border Grid.Column="3"
+                    Background="#F3E5F5"
+                    CornerRadius="4"
+                    Padding="8,4"
+                    Margin="2">
+                <Label x:Name="lPrecType" 
+                       Content="Без осадков"
+                       HorizontalContentAlignment="Center"
+                       VerticalContentAlignment="Center"
+                       Foreground="#7B1FA2"
+                       Padding="0"/>
+            </Border>
+
+            <Border Grid.Column="4"
+                    Background="#FFF3E0"
+                    CornerRadius="4"
+                    Padding="8,4"
+                    Margin="2">
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+                    <Label x:Name="lTemp" 
+                           Content="+24°C"
+                           HorizontalContentAlignment="Center"
+                           VerticalContentAlignment="Center"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           Foreground="#EF6C00"
+                           Padding="0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
 </UserControl>
