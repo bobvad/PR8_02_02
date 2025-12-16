@@ -5,14 +5,40 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Weather"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <ScrollViewer Margin="10,37,10,10">
-            <StackPanel x:Name="parent">
+        Title="MainWindow" Height="450" Width="800"
+        MinHeight="400" MinWidth="600">
 
-            </StackPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox x:Name="Days" 
+                      Grid.Column="0"
+                      SelectionChanged="SelectDay" 
+                      VerticalAlignment="Center"
+                      HorizontalAlignment="Left"
+                      MinWidth="200"/>
+
+            <Button Grid.Column="1"
+                    Content="Обновить данные" 
+                    Click="UpdateWeather"
+                    MinWidth="154"
+                    Height="22"
+                    Padding="10,0"/>
+        </Grid>
+
+        <ScrollViewer Grid.Row="1" 
+                      Margin="10,0,10,10"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="parent"/>
         </ScrollViewer>
-        <ComboBox x:Name="Days" Selected="SelectDay" VerticalAlignment="Top" Width="200" Margin="10,10,590,0"/>
-        <Button Content="Обновить данные" HorizontalAlignment="Left" Margin="636,10,0,0" VerticalAlignment="Top" Width="154" Height="22" Click="UpdateWeather"/>
     </Grid>
 </Window>

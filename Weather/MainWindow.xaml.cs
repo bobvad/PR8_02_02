@@ -22,38 +22,45 @@ namespace Weather
         public MainWindow()
         {
             InitializeComponent();
-            Init();
+            Loaded += async (s, e) => await Init();
         }
-        public async void Init()
+
+        public async Task Init()
         {
             response = await GetWeather.Get(58.009671f, 56.226184f);
-            foreach(Forecast forecast in response.forecast)
+            Days.Items.Clear();
+            foreach (Forecast forecast in response.forecasts)
                 Days.Items.Add(forecast.date.ToString("dd.MM.yyyy"));
-            Create(0);    
+
+            if (Days.Items.Count > 0)
+            {
+                Days.SelectedIndex = 0;
+                Create(0);
+            }
         }
+
         public void Create(int id)
         {
+            if (response == null || id < 0 || id >= response.forecasts.Count)
+                return;
+
             parent.Children.Clear();
 
-            foreach(Hour hour in response.forecast[id].hours)
+            foreach (Hour hour in response.forecasts[id].hours)
             {
                 parent.Children.Add(new Elements.Item(hour));
             }
         }
 
-        private void SelectDay(object sender, RoutedEventArgs e)
+        private void SelectDay(object sender, SelectionChangedEventArgs e)
         {
-            Create(Days.SelectedIndex);
+            if (Days.SelectedIndex >= 0)
+                Create(Days.SelectedIndex);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void UpdateWeather(object sender, RoutedEventArgs e)
         {
-
-        }
-
-        private void UpdateWeather(object sender, RoutedEventArgs e)
-        {
-            Init();
+            await Init();
         }
     }
 }
