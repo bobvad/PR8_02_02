@@ -41,13 +41,13 @@ namespace Weather
         {
             try
             {
-                var coords = await GeoCoder.GetCoords(city);
+                var cords = await GeoCoder.GetCoords(city);
 
                 currentCity = city;
-                currentLat = coords.lat;
-                currentLon = coords.lon;
+                currentLat = cords.lat;
+                currentLon = cords.lon;
 
-                response = await GetWeather.Get(coords.lat, coords.lon);
+                response = await GetWeather.Get(cords.lat, cords.lon);
 
                 Title = $"Прогноз погоды - {currentCity}";
 
