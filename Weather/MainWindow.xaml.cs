@@ -1,36 +1,76 @@
-﻿using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Threading.Tasks;
 using Weather.Classes;
 using Weather.Models;
 
 namespace Weather
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         DataResponse response;
+        private string currentCity = "Пермь";
+        private float currentLat = 58.009671f;
+        private float currentLon = 56.226184f;
+
         public MainWindow()
         {
             InitializeComponent();
-            Loaded += async (s, e) => await Init();
+            Loaded += async (s, e) => await LoadWeatherByCoords(currentLat, currentLon);
+
+            CityBox.GotFocus += CityBox_GotFocus;
+            CityBox.LostFocus += CityBox_LostFocus;
         }
 
-        public async Task Init()
+        private async Task LoadWeatherByCoords(float lat, float lon)
         {
-            response = await GetWeather.Get(58.009671f, 56.226184f);
+            try
+            {
+                response = await GetWeather.Get(lat, lon);
+                UpdateUI();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async Task LoadWeatherByCity(string city)
+        {
+            try
+            {
+                var coords = await GeoCoder.GetCoords(city);
+
+                currentCity = city;
+                currentLat = coords.lat;
+                currentLon = coords.lon;
+
+                response = await GetWeather.Get(coords.lat, coords.lon);
+
+                Title = $"Прогноз погоды - {currentCity}";
+
+                UpdateUI();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                CityBox.Text = "Введите город...";
+                CityBox.Foreground = System.Windows.Media.Brushes.Gray;
+            }
+        }
+
+        private void UpdateUI()
+        {
+            if (response == null) return;
+
             Days.Items.Clear();
             foreach (Forecast forecast in response.forecasts)
+            {
                 Days.Items.Add(forecast.date.ToString("dd.MM.yyyy"));
+            }
 
             if (Days.Items.Count > 0)
             {
@@ -60,7 +100,46 @@ namespace Weather
 
         private async void UpdateWeather(object sender, RoutedEventArgs e)
         {
-            await Init();
+            await LoadWeatherByCoords(currentLat, currentLon);
+        }
+
+        private void CityBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (CityBox.Text == "Введите город...")
+            {
+                CityBox.Text = "";
+                CityBox.Foreground = System.Windows.Media.Brushes.Black;
+            }
+        }
+
+        private void CityBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(CityBox.Text))
+            {
+                CityBox.Text = "Введите город...";
+                CityBox.Foreground = System.Windows.Media.Brushes.Gray;
+            }
+        }
+
+        private async void CityBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                string city = CityBox.Text.Trim();
+                if (!string.IsNullOrEmpty(city) && city != "Введите город...")
+                {
+                    await LoadWeatherByCity(city);
+                }
+            }
+        }
+
+        private async void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            string city = CityBox.Text.Trim();
+            if (!string.IsNullOrEmpty(city) && city != "Введите город...")
+            {
+                await LoadWeatherByCity(city);
+            }
         }
     }
 }
